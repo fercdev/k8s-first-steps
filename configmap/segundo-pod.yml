@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: nginx-second-config
+
+spec:
+  containers:
+    - name: nginx-second-config
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      env:
+        - name: APP_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_NAME

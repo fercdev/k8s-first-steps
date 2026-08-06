@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kubernetes-dashboard
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dashboard-sa
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubernetes-dashboard-csrf-fix
+  namespace: kubernetes-dashboard # Usually kubernetes-dashboard or kube-system
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  #resourceNames: ["kubernetes-dashboard-csrf"]
+  verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kubernetes-dashboard-csrf-fix
+  namespace: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kubernetes-dashboard-csrf-fix
+subjects:
+- kind: ServiceAccount
+  name: dashboard-sa
+  namespace: kubernetes-dashboard
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kubernetes-dashboard-csrf
+  namespace: kubernetes-dashboard
+type: Opaque
+stringData:
+  csrf: "40dc9e29-dd38-4495-a79d-a90e0dd91d4f"
+---
+apiVersion: v1
+kind: Pod
+
+metadata:
+  name: kubernetes-dashboard-pod
+  namespace: kubernetes-dashboard
+  labels:
+    app: kubernetes-dashboard
+
+spec:
+  serviceAccountName: dashboard-sa
+
+  containers:
+    - name: dashboard-container
+      image: kubernetesui/dashboard:v2.7.0
+      ports:
+        - containerPort: 8443
+          name: https
+      
+      args:
+        - --auto-generate-certificates
+        - --namespace=kubernetes-dashboard
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kubernetes-dashboard-service
+  namespace: kubernetes-dashboard
+
+spec:
+  selector:
+    app: kubernetes-dashboard
+  ports:
+    - protocol: TCP
+      port: 443
+      targetPort: 8443
