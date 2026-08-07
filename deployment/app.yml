@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx-app
+
+
+spec:
+  replicas: 4
+
+  selector:
+    matchLabels:
+      app: nginx-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:   # recomendacion del 25% para maxSurge y maxUnavailable | depende la cantidad de replicas del deployment
+      maxSurge: 1 # Indica la cantidad máxima de pods adicionales que se pueden crear durante la actualización
+      maxUnavailable: 1 # Indica la cantidad de pods que pueden estar no disponibles durante la actualización
+      revisionHistoryLimit: 10 # Indica la cantidad de revisiones anteriores que se deben mantener para poder hacer rollback
+      progressDeadlineSeconds: 600 # Indica el tiempo máximo que se debe esperar para que la actualización se complete antes de considerarla fallida
+      
+  
+  template:
+    metadata:
+      labels:
+        app: nginx-app
+
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "250m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"

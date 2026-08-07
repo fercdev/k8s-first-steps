@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: DaemonSet
+
+metadata:
+  name: fluentd-daemonset
+
+
+spec:
+  selector:
+    matchLabels:
+      app: fluentd
+  
+  template:
+    metadata:
+      labels:
+        app: fluentd
+
+    spec:
+      containers:
+        - name: fluentd-container
+          image: fluentd:v1.19.3-debian-1.0
+          ports:
+            - containerPort: 24224
