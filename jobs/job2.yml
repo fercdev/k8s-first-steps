@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: job-completo
+
+spec:
+  completions: 3 # cantidad de ejecuciones para completar el job (successful completions)
+  parallelism: 2 # cantidad de ejecuciones en paralelo (parallel executions)
+  backoffLimit: 2 # cantidad de reintentos en caso de fallo (failed job retries)
+
+  template:
+    spec:
+      containers:
+      - name: job-completo-container
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Ejecutando Batch"
+            echo "Hostname: $(hostname)"
+            echo "Fecha: $(date)"
+            sleep 10
+            echo "Batch finalizado"
+      restartPolicy: Never

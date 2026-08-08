@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: job-deadline
+
+spec:
+  completions: 1 # cantidad de ejecuciones para completar el job (successful completions)
+  parallelism: 1 # cantidad de ejecuciones en paralelo (parallel executions)
+  backoffLimit: 2 # cantidad de reintentos en caso de fallo (failed job retries)
+  activeDeadlineSeconds: 15 # tiempo máximo de ejecución del job (max execution time)
+
+  template:
+    spec:
+      containers:
+      - name: job-deadline-container
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Ejecutando Batch"
+            echo "Hostname: $(hostname)"
+            echo "Fecha: $(date)"
+            echo "Sleep intencional para validar el timeout:"
+            sleep 60
+            echo "Termino correctamente"
+      restartPolicy: Never

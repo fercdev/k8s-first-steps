@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: job-fallido
+
+spec:
+  completions: 1 # cantidad de ejecuciones para completar el job (successful completions)
+  parallelism: 1 # cantidad de ejecuciones en paralelo (parallel executions)
+  backoffLimit: 3 # cantidad de reintentos en caso de fallo (failed job retries)
+
+  template:
+    spec:
+      containers:
+      - name: job-fallido-container
+        image: busybox
+        command:
+          - sh
+          - -c
+          - |
+            echo "Ejecutando Batch"
+            echo "Hostname: $(hostname)"
+            echo "Fecha: $(date)"
+            echo "Fallo intencional:"
+            sleep 3
+            echo "Error: Tarea fallida"
+            exit 1
+      restartPolicy: Never

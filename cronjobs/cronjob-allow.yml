@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: CronJob
+
+metadata:
+  name: cronjob-allow
+
+spec:
+  schedule: "* * * * *" # Ejecutar cada minuto
+  timeZone: "America/Lima" # Configurar la zona horaria a Lima, Perú
+
+  concurrencyPolicy: Allow # Permitir que se ejecuten múltiples instancias del mismo cronjob al mismo tiempo
+
+  #concurrencyPolicy: Forbid # Evitar que se ejecuten múltiples instancias del mismo cronjob al mismo tiempo
+  successfulJobsHistoryLimit: 3 # Limitar la cantidad de jobs exitosos a mantener en el historial
+  failedJobsHistoryLimit: 1 # Limitar la cantidad de jobs fallidos a mantener
+  #staringDeadlineSeconds: 30 # Tiempo límite para iniciar un job después de su programación
+
+  jobTemplate:
+    spec:
+      backoffLimit: 0 # cantidad de reintentos en caso de fallo (failed job retries)
+
+      template:
+        spec:
+          containers:
+          - name: cronjob-allow-container
+            image: busybox
+            command:
+              - sh
+              - -c
+              - |
+                echo "Ejecutando CronJob"
+                echo "Hostname: $(hostname)"
+                echo "Fecha: $(date)"
+                sleep 80
+                echo "CronJob finalizado"
+          restartPolicy: Never
