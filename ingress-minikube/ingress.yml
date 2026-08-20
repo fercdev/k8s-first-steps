@@ -24,3 +24,10 @@ spec:
               name: backend-service
               port:
                 number: 80
+        - path: /nginx
+          pathType: Prefix
+          backend:
+            service:
+              name: nginx-service
+              port:
+                number: 80
