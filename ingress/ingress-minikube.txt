@@ -1,0 +1,13 @@
+
+1- Habilitar el ADDON IngressNginx:
+
+minikube addons enable ingress
+
+
+2- Validar los pods del ADDON:
+
+kubectl get pods -n ingress-nginx
+
+3- Validar los services del ADDON:
+
+kubectl get svc -n ingress-nginx
